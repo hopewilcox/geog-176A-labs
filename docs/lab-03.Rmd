@@ -27,7 +27,7 @@ library(ggthemes)
 # Question 1:
 
 ## 1.1 Define a Projection
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs'
 ```
 
@@ -37,31 +37,28 @@ eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum
 
 
 Access state boundaries
-```{r, eval=FALSE}
-USAboundaries::us_states(resolution = "low")
-```
+
 Filter data to only continental USA
 ```{r}
 conus = USAboundaries::us_states() %>%
   filter(!state_name %in% c("Puerto Rico",
                             "Alaska",
-                            "Hawaii"))
+                            "Hawaii")) %>% 
+  st_transform(5070)
 ```
 
 
 ## 1.3 Get country boundaries for Mexico, the USA, and Canada
-```{r, eval=FALSE}
-remotes::install_github("ropenscilabs/rnaturalearthdata")
-```
+
 
 World boundaries
-```{r, eval=FALSE}
-rnaturalearth::countries110
-```
+
 Make sure data is in simple features format.
+
 ```{r}
-countries_sf = st_as_sf(countries110, coords = c("lng","lat"), crs = 4326)
+countries_sf = st_as_sf(countries110) %>% st_transform(5070)
 ```
+
 Filter to Mexico, USA, Canada
 ```{r}
 mex_can_us = countries_sf %>% 
@@ -75,7 +72,7 @@ cities = cities <- read_csv("../data/uscities.csv") %>%
   st_as_sf(coords=c("lng","lat"), crs=4326) %>% 
    filter(!state_name %in% c("Puerto Rico",
                             "Alaska",
-                            "Hawaii"))
+                            "Hawaii")) %>%  st_transform(5070)
 ```
 # Question 2:
 ## 2.1 Distance to USA Border (coastline or national) (km)
@@ -107,21 +104,21 @@ knitr::kable(farthest5_from_border,
 conus_preserved = st_combine(conus) %>%
   st_cast("MULTILINESTRING")
 
-#cities = cities %>% 
-  #mutate(distance_to_states = st_distance(cities, conus_preserved),
-   #      distance_to_states = units::set_units(distance_to_states, "km"),
-    #     distance_to_states = units::drop_units(distance_to_states))
+cities = cities %>%
+mutate(distance_to_states = st_distance(cities, conus_preserved),
+     distance_to_states = units::set_units(distance_to_states, "km"),
+     distance_to_states = units::drop_units(distance_to_states))
 
 
 
-#farthest_from_state = cities %>% 
- # slice_max(distance_to_states, n=5) %>% 
-  #select(city, state_name, distance_to_states) %>% 
-  #st_drop_geometry()
+farthest_from_state = cities %>%
+  slice_max(distance_to_states, n=5) %>%
+  select(city, state_name, distance_to_states) %>%
+  st_drop_geometry()
 
-#knitr::kable(farthest_from_state,
- #            caption = "5 US Cities Farthest from State Border",
-  #           col.names = c("City", "State", "Distance to state border"))
+knitr::kable(farthest_from_state,
+           caption = "5 US Cities Farthest from State Border",
+            col.names = c("City", "State", "Distance to state border"))
 ```
 
 ## Distance to Mexico (km)
@@ -129,8 +126,6 @@ conus_preserved = st_combine(conus) %>%
 mexico = countries_sf %>% 
   filter(admin %in% c("Mexico")) 
   
-
-
 cities = cities %>% 
   mutate(distance_to_mexico = st_distance(cities, mexico),
          distance_to_mexico = units::set_units(distance_to_mexico, "km"),
@@ -186,19 +181,23 @@ ggplot()+
 
 ## 3.2 City Distance from the Border
 ```{r}
-
+ggplot() + 
+  geom_sf(data = cities, aes(color =distance_to_us_border), size = .2) +
+  scale_color_gradient(low = "gray", high = "red") + 
+  theme_void() + 
+  labs(title = "Distance to USA border")
 ```
 
 ## 3.3 City Distance from Nearest State
 ```{r}
-#ggplot()+
- # geom_sf(data = farthest5_from_border, color = "green")+
-  #geom_sf(data = distance_to_states)+
-  #geom_sf(data = distance_to_states, aes(col = as.numeric(dist)), size=.1)+
-  #ggrepel::geom_label_repel(data = farthest5_from_border,
-   #                         aes(label = city, geometry=geometry),
-    #                        stat = "sf_coordinates",
-     #                       size = 2)
+ggplot()+
+geom_sf(data = farthest5_from_border, color = "green")+
+geom_sf(data = distance_to_states)+
+geom_sf(data = distance_to_states, aes(col = as.numeric(dist)), size=.1)+
+ggrepel::geom_label_repel(data = farthest5_from_border,
+                        aes(label = city, geometry=geometry),
+                       stat = "sf_coordinates",
+                      size = 2)
 ```
 
 

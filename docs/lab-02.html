@@ -381,7 +381,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Geography 176A</h1>
-<h3 class="subtitle">Lab 03: COVID-19 Pandemic</h3>
+<h3 class="subtitle">Lab 02: COVID-19 Pandemic</h3>
 <h4 class="author"><a href="https://hopewilcox.github.io">Hope Wilcox</a></h4>
 
 </div>
@@ -389,34 +389,14 @@ summary {
 
 <div id="question-1" class="section level1">
 <h1>Question 1</h1>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ------------------ tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
-## v tibble  3.0.3     v dplyr   1.0.1
-## v tidyr   1.1.1     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.5.0</code></pre>
-<pre><code>## -- Conflicts --------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(knitr)
+<pre class="r"><code>library(tidyverse)
+library(knitr)
 library(readxl)
-library(zoo)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;zoo&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     as.Date, as.Date.numeric</code></pre>
-<pre class="r"><code># read in covid data from URL
+library(zoo)
+
+
+# read in covid data from URL
 covid19 = read_csv(&#39;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   date = col_date(format = &quot;&quot;),
-##   county = col_character(),
-##   state = col_character(),
-##   fips = col_character(),
-##   cases = col_double(),
-##   deaths = col_double()
-## )</code></pre>
 <p>Filter data to California and add new column of daily new cases</p>
 <pre class="r"><code>covid_ca = covid19 %&gt;%
   filter(state==&quot;California&quot;) %&gt;%
@@ -443,23 +423,23 @@ knitr::kable(top5cumulative,
 <tbody>
 <tr class="odd">
 <td align="left">Los Angeles</td>
-<td align="right">221950</td>
+<td align="right">253176</td>
 </tr>
 <tr class="even">
 <td align="left">Riverside</td>
-<td align="right">46720</td>
+<td align="right">55073</td>
 </tr>
 <tr class="odd">
 <td align="left">Orange</td>
-<td align="right">43709</td>
+<td align="right">51936</td>
 </tr>
 <tr class="even">
 <td align="left">San Bernardino</td>
-<td align="right">41231</td>
+<td align="right">50543</td>
 </tr>
 <tr class="odd">
 <td align="left">San Diego</td>
-<td align="right">34741</td>
+<td align="right">42477</td>
 </tr>
 </tbody>
 </table>
@@ -483,23 +463,23 @@ knitr::kable(top5_newcases,
 <tbody>
 <tr class="odd">
 <td align="left">Los Angeles</td>
-<td align="right">1188</td>
+<td align="right">1110</td>
 </tr>
 <tr class="even">
-<td align="left">San Bernardino</td>
-<td align="right">789</td>
+<td align="left">San Diego</td>
+<td align="right">445</td>
 </tr>
 <tr class="odd">
-<td align="left">Fresno</td>
-<td align="right">703</td>
+<td align="left">Santa Clara</td>
+<td align="right">274</td>
 </tr>
 <tr class="even">
-<td align="left">Sacramento</td>
-<td align="right">373</td>
-</tr>
-<tr class="odd">
 <td align="left">Orange</td>
-<td align="right">342</td>
+<td align="right">178</td>
+</tr>
+<tr class="odd">
+<td align="left">San Joaquin</td>
+<td align="right">165</td>
 </tr>
 </tbody>
 </table>
@@ -534,23 +514,23 @@ knitr::kable(most_cumulative_percapita,
 <tbody>
 <tr class="odd">
 <td align="left">Alpine</td>
-<td align="right">462.56422</td>
+<td align="right">625.85385</td>
 </tr>
 <tr class="even">
 <td align="left">Sierra</td>
-<td align="right">173.78869</td>
+<td align="right">235.13777</td>
 </tr>
 <tr class="odd">
 <td align="left">Modoc</td>
-<td align="right">59.06968</td>
+<td align="right">79.92184</td>
 </tr>
 <tr class="even">
 <td align="left">Trinity</td>
-<td align="right">42.50997</td>
+<td align="right">57.51640</td>
 </tr>
 <tr class="odd">
 <td align="left">Mono</td>
-<td align="right">36.15584</td>
+<td align="right">48.91921</td>
 </tr>
 </tbody>
 </table>
@@ -561,9 +541,8 @@ knitr::kable(most_cumulative_percapita,
   summarise(newcases=sum(newcases)) %&gt;%
   ungroup() %&gt;%
   mutate(case_per100k = newcases/(pop2019/100000)) %&gt;%
-  filter(case_per100k&lt;=100)</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;county&#39; (override with `.groups` argument)</code></pre>
-<pre class="r"><code>knitr::kable(last14days,
+  filter(case_per100k&lt;=100)
+knitr::kable(last14days,
              caption=&quot;Counties with Most New Cases&quot;)</code></pre>
 <table>
 <caption>Counties with Most New Cases</caption>
@@ -580,73 +559,115 @@ knitr::kable(most_cumulative_percapita,
 <td align="left">Alpine</td>
 <td align="right">1129</td>
 <td align="right">0</td>
-<td align="right">0.000000</td>
+<td align="right">0.00000</td>
 </tr>
 <tr class="even">
 <td align="left">Del Norte</td>
 <td align="right">27812</td>
-<td align="right">18</td>
-<td align="right">64.720265</td>
+<td align="right">7</td>
+<td align="right">25.16899</td>
 </tr>
 <tr class="odd">
+<td align="left">El Dorado</td>
+<td align="right">192843</td>
+<td align="right">81</td>
+<td align="right">42.00308</td>
+</tr>
+<tr class="even">
 <td align="left">Humboldt</td>
 <td align="right">135558</td>
-<td align="right">76</td>
-<td align="right">56.064563</td>
+<td align="right">79</td>
+<td align="right">58.27764</td>
+</tr>
+<tr class="odd">
+<td align="left">Inyo</td>
+<td align="right">18039</td>
+<td align="right">16</td>
+<td align="right">88.69671</td>
+</tr>
+<tr class="even">
+<td align="left">Lake</td>
+<td align="right">64386</td>
+<td align="right">62</td>
+<td align="right">96.29423</td>
+</tr>
+<tr class="odd">
+<td align="left">Lassen</td>
+<td align="right">30573</td>
+<td align="right">12</td>
+<td align="right">39.25032</td>
 </tr>
 <tr class="even">
 <td align="left">Mariposa</td>
 <td align="right">17203</td>
-<td align="right">7</td>
-<td align="right">40.690577</td>
+<td align="right">2</td>
+<td align="right">11.62588</td>
 </tr>
 <tr class="odd">
-<td align="left">Modoc</td>
-<td align="right">8841</td>
-<td align="right">3</td>
-<td align="right">33.932813</td>
-</tr>
-<tr class="even">
 <td align="left">Mono</td>
 <td align="right">14444</td>
-<td align="right">14</td>
-<td align="right">96.926059</td>
+<td align="right">1</td>
+<td align="right">6.92329</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Nevada</td>
 <td align="right">99755</td>
-<td align="right">71</td>
-<td align="right">71.174377</td>
+<td align="right">45</td>
+<td align="right">45.11052</td>
+</tr>
+<tr class="odd">
+<td align="left">Placer</td>
+<td align="right">398329</td>
+<td align="right">354</td>
+<td align="right">88.87126</td>
 </tr>
 <tr class="even">
 <td align="left">Plumas</td>
 <td align="right">18807</td>
-<td align="right">8</td>
-<td align="right">42.537353</td>
+<td align="right">3</td>
+<td align="right">15.95151</td>
 </tr>
 <tr class="odd">
 <td align="left">Shasta</td>
 <td align="right">180080</td>
-<td align="right">119</td>
-<td align="right">66.081741</td>
+<td align="right">50</td>
+<td align="right">27.76544</td>
 </tr>
 <tr class="even">
-<td align="left">Siskiyou</td>
-<td align="right">43539</td>
-<td align="right">38</td>
-<td align="right">87.278072</td>
+<td align="left">Sierra</td>
+<td align="right">3005</td>
+<td align="right">0</td>
+<td align="right">0.00000</td>
 </tr>
 <tr class="odd">
-<td align="left">Trinity</td>
-<td align="right">12285</td>
-<td align="right">1</td>
-<td align="right">8.140008</td>
+<td align="left">Siskiyou</td>
+<td align="right">43539</td>
+<td align="right">27</td>
+<td align="right">62.01337</td>
 </tr>
 <tr class="even">
+<td align="left">Solano</td>
+<td align="right">447643</td>
+<td align="right">432</td>
+<td align="right">96.50547</td>
+</tr>
+<tr class="odd">
+<td align="left">Tehama</td>
+<td align="right">65084</td>
+<td align="right">56</td>
+<td align="right">86.04265</td>
+</tr>
+<tr class="even">
+<td align="left">Trinity</td>
+<td align="right">12285</td>
+<td align="right">5</td>
+<td align="right">40.70004</td>
+</tr>
+<tr class="odd">
 <td align="left">Tuolumne</td>
 <td align="right">54478</td>
-<td align="right">19</td>
-<td align="right">34.876464</td>
+<td align="right">32</td>
+<td align="right">58.73931</td>
 </tr>
 </tbody>
 </table>

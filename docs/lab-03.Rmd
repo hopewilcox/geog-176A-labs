@@ -7,7 +7,7 @@ output:
     theme: flatly
 ---
 # Libraries
-```{r, results='hide'}
+```{r, message=F, waring = F}
 # SPDS
 library(tidyverse)
 library(sf)
@@ -27,7 +27,7 @@ library(ggthemes)
 # Question 1:
 
 ## 1.1 Define a Projection
-```{r, eval=TRUE}
+```{r, message=F, waring = F}
 eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs'
 ```
 
@@ -39,7 +39,7 @@ eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum
 Access state boundaries
 
 Filter data to only continental USA
-```{r}
+```{r, message=F, waring = F}
 conus = USAboundaries::us_states() %>%
   filter(!state_name %in% c("Puerto Rico",
                             "Alaska",
@@ -55,19 +55,19 @@ World boundaries
 
 Make sure data is in simple features format.
 
-```{r}
+```{r, message=F, waring = F}
 countries_sf = st_as_sf(countries110) %>% st_transform(5070)
 ```
 
 Filter to Mexico, USA, Canada
-```{r}
+```{r, message=F, waring = F}
 mex_can_us = countries_sf %>% 
   filter(admin %in% c("Canada", "United States of America", "Mexico"))
   
 ```
 
 ## 1.4 Get city locations from the CSV file
-```{r, results='hide'}
+```{r, message=F, waring = F}
 cities = cities <- read_csv("../data/uscities.csv") %>% 
   st_as_sf(coords=c("lng","lat"), crs=4326) %>% 
    filter(!state_name %in% c("Puerto Rico",
@@ -76,7 +76,7 @@ cities = cities <- read_csv("../data/uscities.csv") %>%
 ```
 # Question 2:
 ## 2.1 Distance to USA Border (coastline or national) (km)
-```{r}
+```{r, message=F, waring = F}
 
 conus_resolved = st_union(conus) %>%
   st_cast("MULTILINESTRING")
@@ -99,7 +99,7 @@ knitr::kable(farthest5_from_border,
 ```
 
 ## 2.2 Distance to States (km)
-```{r}
+```{r, message=F, waring = F}
 
 conus_preserved = st_combine(conus) %>%
   st_cast("MULTILINESTRING")
@@ -122,7 +122,7 @@ knitr::kable(farthest_from_state,
 ```
 
 ## Distance to Mexico (km)
-```{r}
+```{r, message=F, waring = F}
 mexico = countries_sf %>% 
   filter(admin %in% c("Mexico")) 
   
@@ -144,7 +144,7 @@ knitr::kable(farthest_from_mexico,
 
 
 ## Distance to Canada (km)
-```{r}
+```{r, message=F, waring = F}
 canada = countries_sf %>% 
   filter(admin %in% c("Canada"))
 
@@ -168,7 +168,7 @@ knitr::kable(farthest_from_canada,
 # Question 3
 
 ## 3.1 Data
-```{r}
+```{r, message=F, waring = F}
 largest10_cities =cities %>% 
             slice_max(population, n=10)
 
@@ -180,7 +180,7 @@ ggplot()+
 ```
 
 ## 3.2 City Distance from the Border
-```{r}
+```{r, message=F, waring = F}
 ggplot() + 
   geom_sf(data = cities, aes(color =distance_to_us_border), size = .2) +
   scale_color_gradient(low = "gray", high = "red") + 
@@ -189,7 +189,7 @@ ggplot() +
 ```
 
 ## 3.3 City Distance from Nearest State
-```{r}
+```{r, message=F, waring = F}
 ggplot()+
 geom_sf(data = farthest5_from_border, color = "green")+
 geom_sf(data = distance_to_states)+
@@ -204,7 +204,7 @@ ggrepel::geom_label_repel(data = farthest5_from_border,
 
 # Question 4 Real World Application
 ## 4.1 Quantifing Border Zone
-```{r}
+```{r, message=F, waring = F}
 mex_cities_160km = cities %>% 
   filter(distance_to_mexico<160)
 
@@ -220,7 +220,7 @@ cities = cities %>%
 
 
 ## 4.2 Mapping Border Zone
-```{r}
+```{r, message=F, waring = F}
 ggplot()+
   geom_sf(data = mex_can_us, color = "black")+
   geom_sf(data = mex_cities_160km, color = "red")+

@@ -1,7 +1,7 @@
 ---
-title: "Geography 176A"
+title: "Lab 03"
+subtitle: 'Distances and the Border Zone'
 author: "[Hope Wilcox](https://hopewilcox.github.io)"
-subtitle: 'Lab 03: Distances and the Border Zone'
 output: 
   html_document:
     theme: flatly
@@ -172,28 +172,44 @@ knitr::kable(farthest_from_canada,
 largest10_cities =cities %>% 
             slice_max(population, n=10)
 
+cityfromborder = cities %>% 
+  arrange(-distance_to_states) %>% 
+  slice_max(distance_to_states, n = 5)
+
 ggplot()+
   geom_sf(data = mex_can_us, color = "black") +
   geom_sf(data = conus, color = "black") +
-  geom_sf(data = largest10_cities, color = "red") 
+  geom_sf(data = largest10_cities, color = "red", size = 2)+
+  ggrepel::geom_label_repel(
+    data = largest10_cities,
+    aes(label = city, geometry = geometry),
+    stat = "sf_coordinates",
+    size = 2
+  )
 
 ```
 
 ## 3.2 City Distance from the Border
-```{r, message=F, waring = F}
+```{r, message=F, waring = F, eval=F}
 ggplot() + 
-  geom_sf(data = cities, aes(color =distance_to_us_border), size = .2) +
-  scale_color_gradient(low = "gray", high = "red") + 
-  theme_void() + 
-  labs(title = "Distance to USA border")
+  geom_sf(data = conus) +
+  geom_sf(data = cities, aes(col = distance_to_us_border), size = .1) +
+  scale_color_gradient(low = "gray", high = "red") +
+  geom_sf(data = farthest5_from_border, col = "blue", size = 2)+
+    ggrepel::geom_label_repel(
+      data = farthest5_from_border,
+      aes(label = city, geometry = geometry),
+          stat = "sf_coordinates",
+          size = 2)
+          
 ```
 
 ## 3.3 City Distance from Nearest State
-```{r, message=F, waring = F}
+```{r, message=F, waring = F, eval = F}
 ggplot()+
 geom_sf(data = farthest5_from_border, color = "green")+
-geom_sf(data = distance_to_states)+
-geom_sf(data = distance_to_states, aes(col = as.numeric(dist)), size=.1)+
+geom_sf(data = farthest_from_state)+
+geom_sf(data = farthest_from_state, aes(col = as.numeric(dist)), size=.1) +
 ggrepel::geom_label_repel(data = farthest5_from_border,
                         aes(label = city, geometry=geometry),
                        stat = "sf_coordinates",
@@ -204,12 +220,14 @@ ggrepel::geom_label_repel(data = farthest5_from_border,
 
 # Question 4 Real World Application
 ## 4.1 Quantifing Border Zone
-```{r, message=F, waring = F}
+```{r, message=F, waring = F, eval = F}
 mex_cities_160km = cities %>% 
   filter(distance_to_mexico<160)
 
 can_cities_160km = cities %>% 
   filter(distance_to_canada<160)
+
+to_border
 
 cities = cities %>% 
   mutate(mex_cities_160km = distance_to_mexico<160) %>% 
@@ -220,7 +238,7 @@ cities = cities %>%
 
 
 ## 4.2 Mapping Border Zone
-```{r, message=F, waring = F}
+```{r, message=F, waring = F, eval = F}
 ggplot()+
   geom_sf(data = mex_can_us, color = "black")+
   geom_sf(data = mex_cities_160km, color = "red")+

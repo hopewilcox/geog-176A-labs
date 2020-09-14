@@ -1,7 +1,7 @@
 ---
-title: "Geography 176A"
+title: "Lab 02"
+subtitle: 'COVID-19 Pandemic'
 author: "[Hope Wilcox](https://hopewilcox.github.io)"
-subtitle: 'Lab 02: COVID-19 Pandemic'
 output:
   html_document:
     theme: flatly

@@ -1,5 +1,6 @@
 ---
-title: "Lab"
+title: "Lab04"
+subtitle: "Tessellations, Spatial Joins, and Point-in-Polygon"
 author: "Hope Wilcox"
 date: "8/28/2020"
 output:
